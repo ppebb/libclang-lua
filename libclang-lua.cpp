@@ -254,7 +254,18 @@ static int l_definition(lua_State *L) {
 
 static int l_is_definition(lua_State *L) {
     CXCursor cur = get_cursor(L, 1);
-    lua_pushinteger(L, clang_isCursorDefinition(cur));
+    lua_pushboolean(L, clang_isCursorDefinition(cur));
+
+    return 1;
+}
+
+static int l_get_underlying_type(lua_State *L) {
+    CXCursor cur = get_cursor(L, 1);
+    CXType *type = new_type(L);
+
+    *type = clang_getTypedefDeclUnderlyingType(cur);
+    if (type->kind == CXType_Invalid)
+        lua_pushnil(L);
 
     return 1;
 }
@@ -344,6 +355,7 @@ static luaL_Reg cursor_functions[]{
     reg_func(type),
     reg_func(definition),
     reg_func(is_definition),
+    reg_func(get_underlying_type),
     reg_func(is_static),
     reg_func(is_extern_c),
     reg_func(is_no_return),
