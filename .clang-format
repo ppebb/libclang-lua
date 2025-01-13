@@ -1,0 +1,17 @@
+BasedOnStyle: LLVM
+AlignAfterOpenBracket: "AlwaysBreak"
+AlignArrayOfStructures: "Left"
+AllowShortFunctionsOnASingleLine: false
+BreakBeforeBraces: "Custom"
+BraceWrapping:
+  BeforeElse: true
+ColumnLimit: 120
+Cpp11BracedListStyle: false
+IndentWidth: 4
+LineEnding: "LF"
+MaxEmptyLinesToKeep: 1
+ReflowComments: true
+RemoveBracesLLVM: true
+RemoveParentheses: "MultipleParentheses"
+RemoveSemicolon: true
+SortIncludes: "CaseInsensitive"
