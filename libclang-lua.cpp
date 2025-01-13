@@ -492,7 +492,7 @@ static int l_type_equal(lua_State *L) {
 
 static luaL_Reg type_functions[]{
     { "name",        l_type_name        },
-    { "__to_string", l_type_name        },
+    { "__tostring",  l_type_name        },
     { "result_type", l_type_result_type },
     { "arguments",   l_type_arguments   },
     reg_func(is_pod),
