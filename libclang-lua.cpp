@@ -66,6 +66,7 @@ static inline const clang::Decl *get_decl(CXCursor cur) {
 static int l_load_translation_unit(lua_State *L) {
     CXIndex idx = get_index(L, 1);
     const char *astFile = luaL_checkstring(L, 2);
+
     CXTranslationUnit *tu = new_translation_unit(L);
     *tu = clang_createTranslationUnit(idx, astFile);
     if (*tu == NULL) {
@@ -109,6 +110,7 @@ static int l_parse_translation_unit(lua_State *L) {
     if (*tu == NULL) {
         lua_pushnil(L);
         lua_pushliteral(L, "Failed to parse");
+
         return 2;
     }
 
@@ -118,6 +120,7 @@ static int l_parse_translation_unit(lua_State *L) {
 static int l_index_gc(lua_State *L) {
     CXIndex idx = get_index(L, 1);
     clang_disposeIndex(idx);
+
     return 0;
 }
 
@@ -133,6 +136,7 @@ static luaL_Reg index_functions[] = {
 static int l_cursor(lua_State *L) {
     CXTranslationUnit tu = get_translation_unit(L, 1);
     CXCursor *cur = new_cursor(L);
+
     *cur = clang_getTranslationUnitCursor(tu);
     if (clang_Cursor_isNull(*cur))
         lua_pushnil(L);
@@ -142,6 +146,7 @@ static int l_cursor(lua_State *L) {
 static int l_translation_unit_gc(lua_State *L) {
     CXTranslationUnit tu = get_translation_unit(L, 1);
     clang_disposeTranslationUnit(tu);
+
     return 0;
 }
 
@@ -153,12 +158,32 @@ static luaL_Reg translation_unit_functions[]{
 
 // Cursor Functions
 
+static int l_name(lua_State *L) {
+    CXCursor cur = get_cursor(L, 1);
+
+    CXString name = clang_getCursorSpelling(cur);
+    lua_pushstring(L, clang_getCString(name));
+    clang_disposeString(name);
+
+    return 1;
+}
+
+static int l_kind(lua_State *L) {
+    CXCursor cur = get_cursor(L, 1);
+    CXString kindName = clang_getCursorKindSpelling(clang_getCursorKind(cur));
+    lua_pushstring(L, clang_getCString(kindName));
+    clang_disposeString(kindName);
+
+    return 1;
+}
+
 enum CXChildVisitResult lua_table_visitor(CXCursor cur, CXCursor par, CXClientData cd) {
     lua_State *L = (lua_State *)cd;
     CXCursor *c = new_cursor(L);
     *c = cur;
     int tablen = lua_rawlen(L, -2);
     lua_rawseti(L, -2, tablen + 1);
+
     return CXChildVisit_Continue;
 }
 
@@ -166,14 +191,7 @@ static int l_children(lua_State *L) {
     CXCursor cur = get_cursor(L, 1);
     lua_createtable(L, 0, 0);
     clang_visitChildren(cur, lua_table_visitor, L);
-    return 1;
-}
 
-static int l_name(lua_State *L) {
-    CXCursor cur = get_cursor(L, 1);
-    CXString kindName = clang_getCursorKindSpelling(clang_getCursorKind(cur));
-    lua_pushstring(L, clang_getCString(kindName));
-    clang_disposeString(kindName);
     return 1;
 }
 
@@ -317,9 +335,10 @@ static int l_cursor_equal(lua_State *L) {
 }
 
 static luaL_Reg cursor_functions[]{
-    reg_func(children),
     reg_func(name),
     { "__tostring", l_name         },
+    reg_func(kind),
+    reg_func(children),
     reg_func(location),
     reg_func(arguments),
     reg_func(type),
