@@ -27,6 +27,15 @@ $ cmake ..
 $ make
 ```
 
+## Type Definitions
+There are included type definitions in `libclang-lua-types.lua` for use with
+LuaLS. They will not be automatically picked up by LuaLS, so you will need to
+point to them using `workspace.library` (see [LuaLS
+docs](https://luals.github.io/wiki/definition-files/)).
+
+Because libclang-lua is directly required as a shared object, LuaLS does not
+know what type it returns, so annotate the require with `--- @type Clang`
+
 ## Examples
 
 While no examples are contained within this repository,
