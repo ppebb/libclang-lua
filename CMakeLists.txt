@@ -2,8 +2,10 @@ cmake_minimum_required(VERSION 3.18)
 project(libclang-lua CXX)
 
 find_package(Lua REQUIRED)
-find_library(CLANG_LIBRARY NAMES clang libclang)
-find_library(CLANG_CPP_LIBRARY NAMES clang-cpp libclang-cpp)
+find_library(CLANG_LIBRARY NAMES clang libclang
+   HINTS /usr/lib/llvm18/lib/ /usr/lib/llvm-18/lib)
+find_library(CLANG_CPP_LIBRARY NAMES clang-cpp libclang-cpp
+   HINTS /usr/lib/llvm18/lib/ /usr/lib/llvm-18/lib)
 
 if(APPLE)
    set(CMAKE_SHARED_MODULE_CREATE_CXX_FLAGS
